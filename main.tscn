@@ -7,4 +7,27 @@ script = ExtResource("1_ig7tw")
 
 [node name="Buttons" type="Node2D" parent="." unique_id=1891082889]
 
-[node name="Labels" type="Node2D" parent="." unique_id=499563201]
+[node name="Panels" type="Node2D" parent="." unique_id=499563201]
+
+[node name="Enter" type="Button" parent="." unique_id=1144997971]
+offset_left = 217.0
+offset_top = 985.0
+offset_right = 303.0
+offset_bottom = 1035.0
+theme_override_font_sizes/font_size = 30
+text = "Enter"
+
+[node name="Delete" type="Button" parent="." unique_id=799137939]
+offset_left = 416.0
+offset_top = 985.0
+offset_right = 518.0
+offset_bottom = 1035.0
+theme_override_font_sizes/font_size = 30
+text = "Delete
+"
+
+[node name="Label" type="Label" parent="." unique_id=284760237]
+offset_right = 40.0
+offset_bottom = 23.0
+theme_override_font_sizes/font_size = 30
+text = "A"
