@@ -7,18 +7,18 @@ extends Node2D
 @onready var color_rect: ColorRect = $Panel/ColorRect
 
 
-
+signal ui_accept
 var alphabet : Array[String] = []
 var posx = 0
 var posy = 0
-var word = ["S", "T", "O", "N", "E"]
+var word = ["L", "E", "G", "I", "T"]
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	# creating letter button
 	delete.pressed.connect(delete_pressed)
 	enter.pressed.connect(enter_pressed)
-	
+		
 	for i in range(65, 91):
 		alphabet.append(char(i))
 		var button = Button.new()
@@ -60,7 +60,16 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	pass
+	if Input.is_action_just_pressed('ui_accept'):
+		enter_pressed()
+	
+	if Input.is_action_just_pressed('ui_text_backspace'):
+		delete_pressed()
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventKey and event.keycode in range(65, 91):
+		if event.pressed:
+			button_pressed(event.keycode)
 
 func button_pressed(index : int):
 	if posx == 0:
@@ -125,6 +134,11 @@ func enter_pressed():
 				var style = panels.get_child(i + 5 * posy).get_theme_stylebox("panel").duplicate()
 				style.bg_color = Color(0.139, 0.584, 0.137, 1.0)
 				panels.get_child(i + 5 * posy).add_theme_stylebox_override("panel", style)
+			elif word.has(pnls_array[i + 5 * posy].get_child(0).text):
+				var style = panels.get_child(i + 5 * posy).get_theme_stylebox("panel").duplicate()
+				style.bg_color = Color(0.827, 0.733, 0.0, 1.0)
+				panels.get_child(i + 5 * posy).add_theme_stylebox_override("panel", style)
+		
 		posx = 0
 		posy += 1
 	
