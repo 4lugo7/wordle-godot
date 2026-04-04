@@ -11,14 +11,14 @@ signal ui_accept
 var alphabet : Array[String] = []
 var posx = 0
 var posy = 0
-var word = ["L", "E", "G", "I", "T"]
+var word = ["L", "A", "B", "E", "L"]
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	# creating letter button
 	delete.pressed.connect(delete_pressed)
 	enter.pressed.connect(enter_pressed)
-		
+	
 	for i in range(65, 91):
 		alphabet.append(char(i))
 		var button = Button.new()
@@ -73,27 +73,27 @@ func _input(event: InputEvent) -> void:
 
 func button_pressed(index : int):
 	if posx == 0:
-		var pnls = panels.get_child(0 + 5 * posy)
+		var pnls = panels.get_child(posx + 5 * posy)
 		var lbls = pnls.get_child(0)
 		lbls.text = char(index)
 		posx += 1
 	elif posx == 1:
-		var pnls = panels.get_child(1 + 5 * posy)
+		var pnls = panels.get_child(posx + 5 * posy)
 		var lbls = pnls.get_child(0)
 		lbls.text = char(index)
 		posx += 1
 	elif posx == 2:
-		var pnls = panels.get_child(2 + 5 * posy)
+		var pnls = panels.get_child(posx + 5 * posy)
 		var lbls = pnls.get_child(0)
 		lbls.text = char(index)
 		posx += 1
 	elif posx == 3:
-		var pnls = panels.get_child(3 + 5 * posy)
+		var pnls = panels.get_child(posx + 5 * posy)
 		var lbls = pnls.get_child(0)
 		lbls.text = char(index)
 		posx += 1
 	elif posx == 4:
-		var pnls = panels.get_child(4 + 5 * posy)
+		var pnls = panels.get_child(posx + 5 * posy)
 		var lbls = pnls.get_child(0)
 		lbls.text = char(index)
 		posx += 1
@@ -127,20 +127,43 @@ func delete_pressed():
 
 func enter_pressed():
 	if posx == 5:
+		var used_letter = []
+		var duplicate_letter = has_duplicate(word)
+		print(duplicate_letter)
 		var pnls_array = panels.get_children()
 		for i in range(5):
 			if pnls_array[i + 5 * posy].get_child(0).text == word[i]:
-				print(pnls_array[i + 5 * posy].get_child(0).text)
 				var style = panels.get_child(i + 5 * posy).get_theme_stylebox("panel").duplicate()
 				style.bg_color = Color(0.139, 0.584, 0.137, 1.0)
 				panels.get_child(i + 5 * posy).add_theme_stylebox_override("panel", style)
-			elif word.has(pnls_array[i + 5 * posy].get_child(0).text):
-				var style = panels.get_child(i + 5 * posy).get_theme_stylebox("panel").duplicate()
-				style.bg_color = Color(0.827, 0.733, 0.0, 1.0)
-				panels.get_child(i + 5 * posy).add_theme_stylebox_override("panel", style)
+				duplicate_letter.erase(pnls_array[i + 5 * posy].get_child(0).text)
+				used_letter.append(pnls_array[i + 5 * posy].get_child(0).text)
+		for i in range(5):
+			if not pnls_array[i + 5 * posy].get_child(0).text == word[i] and word.has(pnls_array[i + 5 * posy].get_child(0).text):
+				if duplicate_letter.has(pnls_array[i + 5 * posy].get_child(0).text):
+					var style = panels.get_child(i + 5 * posy).get_theme_stylebox("panel").duplicate()
+					style.bg_color = Color(0.827, 0.733, 0.0, 1.0)
+					panels.get_child(i + 5 * posy).add_theme_stylebox_override("panel", style)
+					duplicate_letter.erase(pnls_array[i + 5 * posy].get_child(0).text)
+					used_letter.append(pnls_array[i + 5 * posy].get_child(0).text)
+				elif not used_letter.has(pnls_array[i + 5 * posy].get_child(0).text):
+					var style = panels.get_child(i + 5 * posy).get_theme_stylebox("panel").duplicate()
+					style.bg_color = Color(0.827, 0.733, 0.0, 1.0)
+					panels.get_child(i + 5 * posy).add_theme_stylebox_override("panel", style)
+					used_letter.append(pnls_array[i + 5 * posy].get_child(0).text)
 		
 		posx = 0
 		posy += 1
 	
 	if posy == 5:
 		pass
+	
+func has_duplicate(word: Array) -> Array:
+	var seen = []
+	var duplicate_letter = []
+	for s in word:
+		if seen.has(s):
+			duplicate_letter.append(s)
+			duplicate_letter.append(s)
+		seen.append(s)
+	return duplicate_letter
