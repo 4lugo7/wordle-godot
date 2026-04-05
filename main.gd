@@ -11,10 +11,18 @@ signal ui_accept
 var alphabet : Array[String] = []
 var posx = 0
 var posy = 0
-var word = ["L", "A", "B", "E", "L"]
+#var word = ["L", "A", "B", "E", "L"]
+
+func load_five_letter_words():
+	return FileAccess.get_file_as_string("res://materials/valid-wordle-words.txt").split("\n")
+
+
+var word = load_five_letter_words().get(randi_range(0, 14854)).to_upper().split("")
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	print(word)
+	
 	# creating letter button
 	delete.pressed.connect(delete_pressed)
 	enter.pressed.connect(enter_pressed)
@@ -129,7 +137,6 @@ func enter_pressed():
 	if posx == 5:
 		var used_letter = []
 		var duplicate_letter = has_duplicate(word)
-		print(duplicate_letter)
 		var pnls_array = panels.get_children()
 		for i in range(5):
 			if pnls_array[i + 5 * posy].get_child(0).text == word[i]:
