@@ -11,17 +11,18 @@ signal ui_accept
 var alphabet : Array[String] = []
 var posx = 0
 var posy = 0
-#var word = ["L", "A", "B", "E", "L"]
 
-func load_five_letter_words():
+func load_allowed_five_letter_words():
 	return FileAccess.get_file_as_string("res://materials/valid-wordle-words.txt").split("\n")
 
+func load_real_five_letter_word():
+	return FileAccess.get_file_as_string('res://materials/full_word_list.txt').split("\n")
 
-var word = load_five_letter_words().get(randi_range(0, 14854)).to_upper().split("")
+var word = load_real_five_letter_word().get(randi_range(0, 1742)).to_upper().split("")
+var allowed_words = load_allowed_five_letter_words()
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	print(word)
 	
 	# creating letter button
 	delete.pressed.connect(delete_pressed)
@@ -138,33 +139,36 @@ func enter_pressed():
 		var used_letter = []
 		var duplicate_letter = has_duplicate(word)
 		var pnls_array = panels.get_children()
-		for i in range(5):
-			if pnls_array[i + 5 * posy].get_child(0).text == word[i]:
-				var style = panels.get_child(i + 5 * posy).get_theme_stylebox("panel").duplicate()
-				style.bg_color = Color(0.139, 0.584, 0.137, 1.0)
-				panels.get_child(i + 5 * posy).add_theme_stylebox_override("panel", style)
-				duplicate_letter.erase(pnls_array[i + 5 * posy].get_child(0).text)
-				used_letter.append(pnls_array[i + 5 * posy].get_child(0).text)
-		for i in range(5):
-			if not pnls_array[i + 5 * posy].get_child(0).text == word[i] and word.has(pnls_array[i + 5 * posy].get_child(0).text):
-				if duplicate_letter.has(pnls_array[i + 5 * posy].get_child(0).text):
+		var entered_word = get_entered_word(posy)
+		if allowed_words.has(entered_word):
+			for i in range(5):
+				if pnls_array[i + 5 * posy].get_child(0).text == word[i]:
 					var style = panels.get_child(i + 5 * posy).get_theme_stylebox("panel").duplicate()
-					style.bg_color = Color(0.827, 0.733, 0.0, 1.0)
+					style.bg_color = Color(0.139, 0.584, 0.137, 1.0)
 					panels.get_child(i + 5 * posy).add_theme_stylebox_override("panel", style)
 					duplicate_letter.erase(pnls_array[i + 5 * posy].get_child(0).text)
 					used_letter.append(pnls_array[i + 5 * posy].get_child(0).text)
-				elif not used_letter.has(pnls_array[i + 5 * posy].get_child(0).text):
-					var style = panels.get_child(i + 5 * posy).get_theme_stylebox("panel").duplicate()
-					style.bg_color = Color(0.827, 0.733, 0.0, 1.0)
-					panels.get_child(i + 5 * posy).add_theme_stylebox_override("panel", style)
-					used_letter.append(pnls_array[i + 5 * posy].get_child(0).text)
-		
-		posx = 0
-		posy += 1
+			for i in range(5):
+				if not pnls_array[i + 5 * posy].get_child(0).text == word[i] and word.has(pnls_array[i + 5 * posy].get_child(0).text):
+					if duplicate_letter.has(pnls_array[i + 5 * posy].get_child(0).text):
+						var style = panels.get_child(i + 5 * posy).get_theme_stylebox("panel").duplicate()
+						style.bg_color = Color(0.827, 0.733, 0.0, 1.0)
+						panels.get_child(i + 5 * posy).add_theme_stylebox_override("panel", style)
+						duplicate_letter.erase(pnls_array[i + 5 * posy].get_child(0).text)
+						used_letter.append(pnls_array[i + 5 * posy].get_child(0).text)
+					elif not used_letter.has(pnls_array[i + 5 * posy].get_child(0).text):
+						var style = panels.get_child(i + 5 * posy).get_theme_stylebox("panel").duplicate()
+						style.bg_color = Color(0.827, 0.733, 0.0, 1.0)
+						panels.get_child(i + 5 * posy).add_theme_stylebox_override("panel", style)
+						used_letter.append(pnls_array[i + 5 * posy].get_child(0).text)
+			posx = 0
+			posy += 1
+		else:
+			print('not a valid word')
 	
 	if posy == 5:
 		pass
-	
+
 func has_duplicate(word: Array) -> Array:
 	var seen = []
 	var duplicate_letter = []
@@ -174,3 +178,10 @@ func has_duplicate(word: Array) -> Array:
 			duplicate_letter.append(s)
 		seen.append(s)
 	return duplicate_letter
+
+func get_entered_word(y_pos):
+	var entered_word = ''
+	var pnls_array = panels.get_children()
+	for i in range(5):
+		entered_word = entered_word + pnls_array[i + 5 * y_pos].get_child(0).text
+	return entered_word
