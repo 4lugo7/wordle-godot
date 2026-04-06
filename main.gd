@@ -5,6 +5,10 @@ extends Node2D
 @onready var delete: Button = $Delete
 @onready var panel: Panel = $Panel
 @onready var color_rect: ColorRect = $Panel/ColorRect
+@onready var too_short: Label = $TooShort
+@onready var invalid_word: Label = $InvalidWord
+@onready var endlabel: Label = $endlabel
+@onready var restart: Button = $Restart
 
 
 signal ui_accept
@@ -24,6 +28,10 @@ var allowed_words = load_allowed_five_letter_words()
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	
+	endlabel.text = ''
+	invalid_word.visible = false
+	too_short.visible = false
+	
 	# creating letter button
 	delete.pressed.connect(delete_pressed)
 	enter.pressed.connect(enter_pressed)
@@ -42,7 +50,7 @@ func _ready() -> void:
 			#x1 50 y1 540, x2 480 y2 640
 			var btn = buttons.get_child(x + 13 * y)
 			btn.position.x = 40 + 50 * x
-			btn.position.y = 720 + y * 90
+			btn.position.y = 800 + y * 90
 			btn.size.x = 48
 			btn.size.y = 48
 	
@@ -59,8 +67,8 @@ func _ready() -> void:
 			var lbl = pnl.get_child(0)
 			
 			pnl.size = Vector2(50, 50)
-			pnl.position.x = 150 + 102 * x
-			pnl.position.y = 120 + 90 * y
+			pnl.position.x = 135 + 102 * x
+			pnl.position.y = 200 + 90 * y
 			
 			lbl.add_theme_font_size_override("font_size", 30)
 			lbl.size = pnl.size
@@ -81,33 +89,40 @@ func _input(event: InputEvent) -> void:
 			button_pressed(event.keycode)
 
 func button_pressed(index : int):
-	if posx == 0:
-		var pnls = panels.get_child(posx + 5 * posy)
-		var lbls = pnls.get_child(0)
-		lbls.text = char(index)
-		posx += 1
-	elif posx == 1:
-		var pnls = panels.get_child(posx + 5 * posy)
-		var lbls = pnls.get_child(0)
-		lbls.text = char(index)
-		posx += 1
-	elif posx == 2:
-		var pnls = panels.get_child(posx + 5 * posy)
-		var lbls = pnls.get_child(0)
-		lbls.text = char(index)
-		posx += 1
-	elif posx == 3:
-		var pnls = panels.get_child(posx + 5 * posy)
-		var lbls = pnls.get_child(0)
-		lbls.text = char(index)
-		posx += 1
-	elif posx == 4:
-		var pnls = panels.get_child(posx + 5 * posy)
-		var lbls = pnls.get_child(0)
-		lbls.text = char(index)
-		posx += 1
+	invalid_word.visible = false
+	too_short.visible = false
+	
+	if posy < 6:
+		if posx == 0:
+			var pnls = panels.get_child(posx + 5 * posy)
+			var lbls = pnls.get_child(0)
+			lbls.text = char(index)
+			posx += 1
+		elif posx == 1:
+			var pnls = panels.get_child(posx + 5 * posy)
+			var lbls = pnls.get_child(0)
+			lbls.text = char(index)
+			posx += 1
+		elif posx == 2:
+			var pnls = panels.get_child(posx + 5 * posy)
+			var lbls = pnls.get_child(0)
+			lbls.text = char(index)
+			posx += 1
+		elif posx == 3:
+			var pnls = panels.get_child(posx + 5 * posy)
+			var lbls = pnls.get_child(0)
+			lbls.text = char(index)
+			posx += 1
+		elif posx == 4:
+			var pnls = panels.get_child(posx + 5 * posy)
+			var lbls = pnls.get_child(0)
+			lbls.text = char(index)
+			posx += 1
 
 func delete_pressed():
+	invalid_word.visible = false
+	too_short.visible = false
+	
 	if posx == 1:
 		var pnls = panels.get_child(0 + 5 * posy)
 		var lbls = pnls.get_child(0)
@@ -135,39 +150,58 @@ func delete_pressed():
 		posx -= 1
 
 func enter_pressed():
-	if posx == 5:
-		var used_letter = []
-		var duplicate_letter = has_duplicate(word)
-		var pnls_array = panels.get_children()
-		var entered_word = get_entered_word(posy)
-		if allowed_words.has(entered_word):
-			for i in range(5):
-				if pnls_array[i + 5 * posy].get_child(0).text == word[i]:
-					var style = panels.get_child(i + 5 * posy).get_theme_stylebox("panel").duplicate()
-					style.bg_color = Color(0.139, 0.584, 0.137, 1.0)
-					panels.get_child(i + 5 * posy).add_theme_stylebox_override("panel", style)
-					duplicate_letter.erase(pnls_array[i + 5 * posy].get_child(0).text)
-					used_letter.append(pnls_array[i + 5 * posy].get_child(0).text)
-			for i in range(5):
-				if not pnls_array[i + 5 * posy].get_child(0).text == word[i] and word.has(pnls_array[i + 5 * posy].get_child(0).text):
-					if duplicate_letter.has(pnls_array[i + 5 * posy].get_child(0).text):
+	if posy < 6:
+		if posx == 5:
+			var used_letter = []
+			var duplicate_letter = has_duplicate(word)
+			var pnls_array = panels.get_children()
+			var buttons_array = buttons.get_children()
+			var entered_word = get_entered_word(posy)
+			var entered_word_array = entered_word.split("")
+			
+			if allowed_words.has(entered_word):
+				for i in range(5):
+					if pnls_array[i + 5 * posy].get_child(0).text == word[i]:
 						var style = panels.get_child(i + 5 * posy).get_theme_stylebox("panel").duplicate()
-						style.bg_color = Color(0.827, 0.733, 0.0, 1.0)
+						style.bg_color = Color(0.139, 0.584, 0.137, 1.0)
 						panels.get_child(i + 5 * posy).add_theme_stylebox_override("panel", style)
 						duplicate_letter.erase(pnls_array[i + 5 * posy].get_child(0).text)
 						used_letter.append(pnls_array[i + 5 * posy].get_child(0).text)
-					elif not used_letter.has(pnls_array[i + 5 * posy].get_child(0).text):
-						var style = panels.get_child(i + 5 * posy).get_theme_stylebox("panel").duplicate()
-						style.bg_color = Color(0.827, 0.733, 0.0, 1.0)
-						panels.get_child(i + 5 * posy).add_theme_stylebox_override("panel", style)
-						used_letter.append(pnls_array[i + 5 * posy].get_child(0).text)
-			posx = 0
-			posy += 1
+				for i in range(5):
+					if not pnls_array[i + 5 * posy].get_child(0).text == word[i] and word.has(pnls_array[i + 5 * posy].get_child(0).text):
+						if duplicate_letter.has(pnls_array[i + 5 * posy].get_child(0).text):
+							var style = panels.get_child(i + 5 * posy).get_theme_stylebox("panel").duplicate()
+							style.bg_color = Color(0.827, 0.733, 0.0, 1.0)
+							panels.get_child(i + 5 * posy).add_theme_stylebox_override("panel", style)
+							duplicate_letter.erase(pnls_array[i + 5 * posy].get_child(0).text)
+							used_letter.append(pnls_array[i + 5 * posy].get_child(0).text)
+						elif not used_letter.has(pnls_array[i + 5 * posy].get_child(0).text):
+							var style = panels.get_child(i + 5 * posy).get_theme_stylebox("panel").duplicate()
+							style.bg_color = Color(0.827, 0.733, 0.0, 1.0)
+							panels.get_child(i + 5 * posy).add_theme_stylebox_override("panel", style)
+							used_letter.append(pnls_array[i + 5 * posy].get_child(0).text)
+					elif not pnls_array[i + 5 * posy].get_child(0).text == word[i] and not word.has(pnls_array[i + 5 * posy].get_child(0).text):
+						var used_button = buttons_array[ord(pnls_array[i + 5 * posy].get_child(0).text)-65]
+						used_button.add_theme_color_override("font_color", Color(0.149, 0.149, 0.149, 1.0))
+				
+				posx = 0
+				posy += 1
+			else:
+				print('not a valid word')
+				invalid_word.visible = true
+			
+			if posy == 6:
+				endlabel.text = "You suck at wordle!"
+				restart.visible = true
+			
+			if entered_word_array == word:
+				endlabel.text = "You won wordle!"
+				posy = 7
+				restart.visible = true
+			
 		else:
-			print('not a valid word')
-	
-	if posy == 5:
-		pass
+			too_short.visible = true
+
 
 func has_duplicate(word: Array) -> Array:
 	var seen = []
@@ -185,3 +219,6 @@ func get_entered_word(y_pos):
 	for i in range(5):
 		entered_word = entered_word + pnls_array[i + 5 * y_pos].get_child(0).text
 	return entered_word
+
+func _on_restart_pressed() -> void:
+	get_tree().reload_current_scene()

@@ -11,17 +11,61 @@ script = ExtResource("1_ig7tw")
 
 [node name="Enter" type="Button" parent="." unique_id=1144997971]
 offset_left = 217.0
-offset_top = 985.0
+offset_top = 1027.0
 offset_right = 303.0
-offset_bottom = 1035.0
-theme_override_font_sizes/font_size = 30
+offset_bottom = 1077.0
+theme_override_font_sizes/font_size = 32
 text = "Enter"
 
 [node name="Delete" type="Button" parent="." unique_id=799137939]
 offset_left = 416.0
-offset_top = 985.0
+offset_top = 1027.0
 offset_right = 518.0
-offset_bottom = 1035.0
-theme_override_font_sizes/font_size = 30
+offset_bottom = 1077.0
+theme_override_font_sizes/font_size = 32
 text = "Delete
 "
+
+[node name="InvalidWord" type="Label" parent="." unique_id=1150252060]
+visible = false
+offset_left = 241.0
+offset_top = 65.0
+offset_right = 478.0
+offset_bottom = 110.0
+theme_override_font_sizes/font_size = 32
+text = "Not in word list"
+
+[node name="TooShort" type="Label" parent="." unique_id=2029727335]
+visible = false
+offset_left = 214.0
+offset_top = 65.0
+offset_right = 505.0
+offset_bottom = 110.0
+theme_override_font_sizes/font_size = 32
+text = "Not enough letters"
+
+[node name="endlabel" type="Label" parent="." unique_id=633752457]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 267.0
+offset_top = 65.0
+offset_right = 452.0
+offset_bottom = 110.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 32
+text = "ENDSCREEN"
+
+[node name="Restart" type="Button" parent="." unique_id=532479676]
+visible = false
+offset_left = 301.0
+offset_top = 1141.0
+offset_right = 421.0
+offset_bottom = 1194.0
+theme_override_font_sizes/font_size = 32
+text = "Restart"
+
+[connection signal="pressed" from="Restart" to="." method="_on_restart_pressed"]
