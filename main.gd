@@ -27,7 +27,7 @@ var allowed_words = load_allowed_five_letter_words()
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	
+	print(word)
 	endlabel.text = ''
 	invalid_word.visible = false
 	too_short.visible = false
@@ -82,6 +82,7 @@ func _process(delta: float) -> void:
 	
 	if Input.is_action_just_pressed('ui_text_backspace'):
 		delete_pressed()
+	
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.keycode in range(65, 91):
@@ -158,17 +159,20 @@ func enter_pressed():
 			var buttons_array = buttons.get_children()
 			var entered_word = get_entered_word(posy)
 			var entered_word_array = entered_word.split("")
+			var time_ellapsed = 0.43
 			
 			if allowed_words.has(entered_word):
 				for i in range(5):
+					# flip_animation
+					flip_animation(pnls_array[i + 5 * posy], 0)
+					
 					if pnls_array[i + 5 * posy].get_child(0).text == word[i]:
 						var style = panels.get_child(i + 5 * posy).get_theme_stylebox("panel").duplicate()
 						style.bg_color = Color(0.139, 0.584, 0.137, 1.0)
 						panels.get_child(i + 5 * posy).add_theme_stylebox_override("panel", style)
 						duplicate_letter.erase(pnls_array[i + 5 * posy].get_child(0).text)
 						used_letter.append(pnls_array[i + 5 * posy].get_child(0).text)
-				for i in range(5):
-					if not pnls_array[i + 5 * posy].get_child(0).text == word[i] and word.has(pnls_array[i + 5 * posy].get_child(0).text):
+					elif not pnls_array[i + 5 * posy].get_child(0).text == word[i] and word.has(pnls_array[i + 5 * posy].get_child(0).text):
 						if duplicate_letter.has(pnls_array[i + 5 * posy].get_child(0).text):
 							var style = panels.get_child(i + 5 * posy).get_theme_stylebox("panel").duplicate()
 							style.bg_color = Color(0.827, 0.733, 0.0, 1.0)
@@ -183,9 +187,13 @@ func enter_pressed():
 					elif not pnls_array[i + 5 * posy].get_child(0).text == word[i] and not word.has(pnls_array[i + 5 * posy].get_child(0).text):
 						var used_button = buttons_array[ord(pnls_array[i + 5 * posy].get_child(0).text)-65]
 						used_button.add_theme_color_override("font_color", Color(0.149, 0.149, 0.149, 1.0))
+						
+					
+					flip_animation(pnls_array[i + 5 * posy], 50)
 				
 				posx = 0
 				posy += 1
+				
 			else:
 				print('not a valid word')
 				invalid_word.visible = true
@@ -222,3 +230,8 @@ func get_entered_word(y_pos):
 
 func _on_restart_pressed() -> void:
 	get_tree().reload_current_scene()
+
+func flip_animation(panel_i, size):
+	var tween1 = create_tween()
+	tween1.tween_property(panel_i, "size:y", size, 0.215)
+	await tween1.finished
