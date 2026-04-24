@@ -159,7 +159,6 @@ func enter_pressed():
 			var buttons_array = buttons.get_children()
 			var entered_word = get_entered_word(posy)
 			var entered_word_array = entered_word.split("")
-			var time_ellapsed = 0.43
 			
 			if allowed_words.has(entered_word):
 				for i in range(5):
@@ -199,7 +198,7 @@ func enter_pressed():
 				invalid_word.visible = true
 			
 			if posy == 6:
-				endlabel.text = "You suck at wordle!"
+				endlabel.text = "You suck at wordle!\n            " + "".join(word)
 				restart.visible = true
 			
 			if entered_word_array == word:
