@@ -163,8 +163,8 @@ func enter_pressed():
 			if allowed_words.has(entered_word):
 				for i in range(5):
 					# flip_animation
-					# flip_animation(pnls_array[i + 5 * posy], 0)
-					
+					var tween = await flip_animation(pnls_array[i + 5 * posy], 0)
+					await tween.finished
 					if pnls_array[i + 5 * posy].get_child(0).text == word[i]:
 						var style = panels.get_child(i + 5 * posy).get_theme_stylebox("panel").duplicate()
 						style.bg_color = Color(0.139, 0.584, 0.137, 1.0)
@@ -188,7 +188,6 @@ func enter_pressed():
 						used_button.add_theme_color_override("font_color", Color(0.149, 0.149, 0.149, 1.0))
 						
 					
-					#flip_animation(pnls_array[i + 5 * posy], 50)
 				
 				posx = 0
 				posy += 1
@@ -234,3 +233,7 @@ func flip_animation(panel_i, size):
 	var tween1 = create_tween()
 	tween1.tween_property(panel_i, "size:y", size, 0.215)
 	await tween1.finished
+	var tween2 = create_tween()
+	tween2.tween_property(panel_i, "size:y", 50, 0.215)
+	
+	return tween2
