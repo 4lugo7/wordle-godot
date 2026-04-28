@@ -125,32 +125,32 @@ func button_pressed(index : int):
 func delete_pressed():
 	invalid_word.visible = false
 	too_short.visible = false
-	
-	if posx == 1:
-		var pnls = panels.get_child(0 + 5 * posy)
-		var lbls = pnls.get_child(0)
-		lbls.text = ""
-		posx -= 1
-	elif posx == 2:
-		var pnls = panels.get_child(1 + 5 * posy)
-		var lbls = pnls.get_child(0)
-		lbls.text = ""
-		posx -= 1
-	elif posx == 3:
-		var pnls = panels.get_child(2 + 5 * posy)
-		var lbls = pnls.get_child(0)
-		lbls.text = ""
-		posx -= 1
-	elif posx == 4:
-		var pnls = panels.get_child(3 + 5 * posy)
-		var lbls = pnls.get_child(0)
-		lbls.text = ""
-		posx -= 1
-	elif posx == 5:
-		var pnls = panels.get_child(4 + 5 * posy)
-		var lbls = pnls.get_child(0)
-		lbls.text = ""
-		posx -= 1
+	if not already_pressed:
+		if posx == 1:
+			var pnls = panels.get_child(0 + 5 * posy)
+			var lbls = pnls.get_child(0)
+			lbls.text = ""
+			posx -= 1
+		elif posx == 2:
+			var pnls = panels.get_child(1 + 5 * posy)
+			var lbls = pnls.get_child(0)
+			lbls.text = ""
+			posx -= 1
+		elif posx == 3:
+			var pnls = panels.get_child(2 + 5 * posy)
+			var lbls = pnls.get_child(0)
+			lbls.text = ""
+			posx -= 1
+		elif posx == 4:
+			var pnls = panels.get_child(3 + 5 * posy)
+			var lbls = pnls.get_child(0)
+			lbls.text = ""
+			posx -= 1
+		elif posx == 5:
+			var pnls = panels.get_child(4 + 5 * posy)
+			var lbls = pnls.get_child(0)
+			lbls.text = ""
+			posx -= 1
 
 func enter_pressed():
 	if posy < 6:
