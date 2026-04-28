@@ -15,6 +15,7 @@ signal ui_accept
 var alphabet : Array[String] = []
 var posx = 0
 var posy = 0
+var already_pressed = false
 
 func load_allowed_five_letter_words():
 	return FileAccess.get_file_as_string("res://materials/valid-wordle-words.txt").split("\n")
@@ -69,6 +70,7 @@ func _ready() -> void:
 			pnl.size = Vector2(50, 50)
 			pnl.position.x = 135 + 102 * x
 			pnl.position.y = 200 + 90 * y
+			pnl.clip_contents = true
 			
 			lbl.add_theme_font_size_override("font_size", 30)
 			lbl.size = pnl.size
@@ -82,8 +84,8 @@ func _process(delta: float) -> void:
 	
 	if Input.is_action_just_pressed('ui_text_backspace'):
 		delete_pressed()
-	
-#dsdsd
+		
+
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.keycode in range(65, 91):
 		if event.pressed:
@@ -152,7 +154,7 @@ func delete_pressed():
 
 func enter_pressed():
 	if posy < 6:
-		if posx == 5:
+		if posx == 5 and not already_pressed:
 			var used_letter = []
 			var duplicate_letter = has_duplicate(word)
 			var pnls_array = panels.get_children()
@@ -162,6 +164,8 @@ func enter_pressed():
 			
 			if allowed_words.has(entered_word):
 				for i in range(5):
+					if i == 0:
+						already_pressed = true
 					# flip_animation
 					var tween = await flip_animation(pnls_array[i + 5 * posy], 0)
 					await tween.finished
@@ -191,6 +195,7 @@ func enter_pressed():
 				
 				posx = 0
 				posy += 1
+				already_pressed = false
 				
 			else:
 				print('not a valid word')
@@ -206,7 +211,8 @@ func enter_pressed():
 				restart.visible = true
 			
 		else:
-			too_short.visible = true
+			if not already_pressed:
+				too_short.visible = true
 
 
 func has_duplicate(word: Array) -> Array:
@@ -230,10 +236,20 @@ func _on_restart_pressed() -> void:
 	get_tree().reload_current_scene()
 
 func flip_animation(panel_i, size):
-	var tween1 = create_tween()
-	tween1.tween_property(panel_i, "size:y", size, 0.215)
-	await tween1.finished
-	var tween2 = create_tween()
-	tween2.tween_property(panel_i, "size:y", 50, 0.215)
+	var tween_bottom1 = create_tween()
+	var tween_top1 = create_tween()
+	tween_bottom1.tween_property(panel_i, "size:y", size, 0.215)
+	tween_top1.tween_property(panel_i, "position:y", panel_i.position.y + 50/2, 0.215)
 	
-	return tween2
+	await tween_bottom1.finished
+	await tween_top1.finished
+	
+	var tween_bottom2 = create_tween()
+	var tween_top2 = create_tween()
+	tween_bottom2.tween_property(panel_i, "size:y", 50, 0.215)
+	tween_top2.tween_property(panel_i, "position:y", panel_i.position.y - 50/2, 0.215)
+	
+	return tween_top2
+
+func set_font_size(label_i, value):
+	label_i.add_theme_font_size_override("font_size", value)
