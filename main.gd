@@ -54,6 +54,7 @@ func _ready() -> void:
 			btn.position.y = 800 + y * 90
 			btn.size.x = 48
 			btn.size.y = 48
+			btn.focus_mode = Control.FOCUS_NONE
 	
 	# creating panels for label input
 	for y in range(6):
@@ -96,58 +97,19 @@ func button_pressed(index : int):
 	too_short.visible = false
 	
 	if posy < 6:
-		if posx == 0:
-			var pnls = panels.get_child(posx + 5 * posy)
-			var lbls = pnls.get_child(0)
-			lbls.text = char(index)
-			posx += 1
-		elif posx == 1:
-			var pnls = panels.get_child(posx + 5 * posy)
-			var lbls = pnls.get_child(0)
-			lbls.text = char(index)
-			posx += 1
-		elif posx == 2:
-			var pnls = panels.get_child(posx + 5 * posy)
-			var lbls = pnls.get_child(0)
-			lbls.text = char(index)
-			posx += 1
-		elif posx == 3:
-			var pnls = panels.get_child(posx + 5 * posy)
-			var lbls = pnls.get_child(0)
-			lbls.text = char(index)
-			posx += 1
-		elif posx == 4:
+		if 4 >= posx and posx >= 0:
 			var pnls = panels.get_child(posx + 5 * posy)
 			var lbls = pnls.get_child(0)
 			lbls.text = char(index)
 			posx += 1
 
+
 func delete_pressed():
 	invalid_word.visible = false
 	too_short.visible = false
 	if not already_pressed:
-		if posx == 1:
-			var pnls = panels.get_child(0 + 5 * posy)
-			var lbls = pnls.get_child(0)
-			lbls.text = ""
-			posx -= 1
-		elif posx == 2:
-			var pnls = panels.get_child(1 + 5 * posy)
-			var lbls = pnls.get_child(0)
-			lbls.text = ""
-			posx -= 1
-		elif posx == 3:
-			var pnls = panels.get_child(2 + 5 * posy)
-			var lbls = pnls.get_child(0)
-			lbls.text = ""
-			posx -= 1
-		elif posx == 4:
-			var pnls = panels.get_child(3 + 5 * posy)
-			var lbls = pnls.get_child(0)
-			lbls.text = ""
-			posx -= 1
-		elif posx == 5:
-			var pnls = panels.get_child(4 + 5 * posy)
+		if 5 >= posx and posx >= 1:
+			var pnls = panels.get_child(posx - 1 + 5 * posy)
 			var lbls = pnls.get_child(0)
 			lbls.text = ""
 			posx -= 1
@@ -161,8 +123,13 @@ func enter_pressed():
 			var buttons_array = buttons.get_children()
 			var entered_word = get_entered_word(posy)
 			var entered_word_array = entered_word.split("")
+			var green_letter = []
 			
 			if allowed_words.has(entered_word):
+				for i in range(5):
+					if pnls_array[i + 5 * posy].get_child(0).text == word[i]:
+						green_letter.append(word[i])
+				
 				for i in range(5):
 					if i == 0:
 						already_pressed = true
@@ -175,7 +142,7 @@ func enter_pressed():
 						panels.get_child(i + 5 * posy).add_theme_stylebox_override("panel", style)
 						duplicate_letter.erase(pnls_array[i + 5 * posy].get_child(0).text)
 						used_letter.append(pnls_array[i + 5 * posy].get_child(0).text)
-					elif not pnls_array[i + 5 * posy].get_child(0).text == word[i] and word.has(pnls_array[i + 5 * posy].get_child(0).text):
+					elif not pnls_array[i + 5 * posy].get_child(0).text == word[i] and word.has(pnls_array[i + 5 * posy].get_child(0).text) and not green_letter.has(word[i]):
 						if duplicate_letter.has(pnls_array[i + 5 * posy].get_child(0).text):
 							var style = panels.get_child(i + 5 * posy).get_theme_stylebox("panel").duplicate()
 							style.bg_color = Color(0.827, 0.733, 0.0, 1.0)
